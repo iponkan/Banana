@@ -19,8 +19,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".audio.AudioActivity" />
-        <activity android:name=".camera.CameraActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+        <activity android:name=".camera.CameraActivity"/>
     </application>
 
 </manifest>

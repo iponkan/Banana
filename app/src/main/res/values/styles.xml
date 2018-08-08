@@ -9,7 +9,7 @@
     <!--<item name="android:fitsSystemWindows">true</item>-->//注意这个不能在这里加
 
     <item name="android:windowTranslucentStatus">false</item>//半透明状态
-    <item name="android:windowTranslucentNavigation">true</item>
+    <!--<item name="android:windowTranslucentNavigation">true</item>-->
     <item name="android:statusBarColor">@android:color/transparent</item>
 </style>
 

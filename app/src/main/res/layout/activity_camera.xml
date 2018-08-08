@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".camera.CameraActivity">
+    tools:context=".camera.CameraActivity"
+    android:fitsSystemWindows="false"> <!--true表示考虑状态栏的空间，不占用，false表示占用-->
 
     <TextView
         android:layout_width="match_parent"

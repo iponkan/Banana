@@ -1,25 +1,23 @@
-package com.ponkan.banana.camera
+package com.ponkan.banana.player
 
 import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-
+import com.ponkan.banana.PlayerFragment
 import com.ponkan.banana.R
 
+class PlayerActivity : AppCompatActivity(), PlayerFragment.OnFragmentInteractionListener {
 
-
-class CameraActivity : AppCompatActivity(), CameraFragment.OnFragmentInteractionListener {
-
-    private var cameraFragment: CameraFragment? = null
+    private var playerFragment: PlayerFragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_camera)
+        setContentView(R.layout.activity_palyer)
 
-        if (cameraFragment == null) {
-            cameraFragment = CameraFragment.newInstance("heng", "ha")
-            supportFragmentManager.beginTransaction().add(android.R.id.content, cameraFragment, "cameraFragment").commitAllowingStateLoss()
+        if (playerFragment == null) {
+            playerFragment = PlayerFragment.newInstance("heng", "ha")
+            supportFragmentManager.beginTransaction().add(android.R.id.content, playerFragment, "playerFragment").commitAllowingStateLoss()
         }
     }
 

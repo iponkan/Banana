@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import com.ponkan.banana.audio.AudioActivity
 import com.ponkan.banana.camera.CameraActivity
+import com.ponkan.banana.player.PlayerActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -24,6 +25,13 @@ class MainActivity : AppCompatActivity() {
     fun goCamera(view: View) {
         val intent =  Intent()
         intent.setClass(this, CameraActivity::class.java)
+        startActivity(intent)
+
+    }
+
+    fun goPlayer(view: View) {
+        val intent =  Intent()
+        intent.setClass(this, PlayerActivity::class.java)
         startActivity(intent)
 
     }

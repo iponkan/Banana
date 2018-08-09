@@ -19,7 +19,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".audio.AudioActivity" />
-        <activity android:name=".camera.CameraActivity"/>
+        <activity android:name=".camera.CameraActivity" />
+        <activity android:name=".player.PlayerActivity"></activity>
     </application>
 
 </manifest>

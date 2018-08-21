@@ -11,10 +11,18 @@ public class CameraGLSurfaceView extends GLSurfaceView implements GLSurfaceView.
 
     public CameraGLSurfaceView(Context context) {
         super(context);
+        init();
     }
 
     public CameraGLSurfaceView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        init();
+    }
+
+    private void init() {
+        setEGLContextClientVersion(2);
+        setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+        setRenderer(this);
     }
 
     @Override

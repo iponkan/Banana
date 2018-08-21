@@ -7,6 +7,7 @@ import android.view.View
 import com.ponkan.banana.audio.AudioActivity
 import com.ponkan.banana.camera.CameraActivity
 import com.ponkan.banana.player.PlayerActivity
+import com.ponkan.banana.test.TestActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -32,6 +33,13 @@ class MainActivity : AppCompatActivity() {
     fun goPlayer(view: View) {
         val intent =  Intent()
         intent.setClass(this, PlayerActivity::class.java)
+        startActivity(intent)
+
+    }
+
+    fun goTest(view: View) {
+        val intent =  Intent()
+        intent.setClass(this, TestActivity::class.java)
         startActivity(intent)
 
     }

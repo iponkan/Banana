@@ -5,9 +5,17 @@
     android:layout_height="match_parent"
     tools:context=".camera.CameraFragment">
 
-    <android.opengl.GLSurfaceView
-        android:id="@+id/glsv_camera"
+    <com.ponkan.banana.camera.widget.AspectFrameLayout
+        android:id="@+id/cameraPreview_afl"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent">
+
+        <android.opengl.GLSurfaceView
+            android:id="@+id/glsv_camera"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </com.ponkan.banana.camera.widget.AspectFrameLayout>
+
 
 </FrameLayout>

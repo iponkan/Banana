@@ -1,14 +1,22 @@
 package com.ponkan.banana.camera;
 
 import android.content.Context;
+import android.graphics.SurfaceTexture;
 import android.net.Uri;
+import android.opengl.GLSurfaceView;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.ponkan.banana.R;
+
+import javax.microedition.khronos.egl.EGLConfig;
+import javax.microedition.khronos.opengles.GL10;
 
 
 /**
@@ -19,7 +27,8 @@ import com.ponkan.banana.R;
  * Use the {@link CameraFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class CameraFragment extends Fragment {
+public class CameraFragment extends Fragment implements GLSurfaceView.Renderer,
+        SurfaceTexture.OnFrameAvailableListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -30,6 +39,10 @@ public class CameraFragment extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+
+    private GLSurfaceView mCameraView;
+    private SurfaceTexture mSurfaceTexture;
+    private Surface mSurface;
 
     public CameraFragment() {
         // Required empty public constructor
@@ -69,6 +82,15 @@ public class CameraFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_camera, container, false);
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mCameraView = view.findViewById(R.id.glsv_camera);
+        mCameraView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+        mCameraView.setEGLContextClientVersion(2);
+        mCameraView.setRenderer(this);
+    }
+
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
@@ -106,5 +128,25 @@ public class CameraFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    @Override
+    public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+
+    }
+
+    @Override
+    public void onSurfaceChanged(GL10 gl, int width, int height) {
+
+    }
+
+    @Override
+    public void onDrawFrame(GL10 gl) {
+
+    }
+
+    @Override
+    public void onFrameAvailable(SurfaceTexture surfaceTexture) {
+        mCameraView.requestRender();
     }
 }

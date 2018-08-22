@@ -4,6 +4,7 @@ import android.util.Log;
 
 public class MyThread extends Thread {
 
+    // 这里可以将run方法改为synchronized的
     @Override
     public synchronized void run() {
         while (true) {

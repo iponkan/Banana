@@ -4,7 +4,6 @@ import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import com.ponkan.banana.PlayerFragment
 import com.ponkan.banana.R
 
 class PlayerActivity : AppCompatActivity(), PlayerFragment.OnFragmentInteractionListener {

@@ -86,9 +86,10 @@ public class CameraFragment extends Fragment implements GLSurfaceView.Renderer,
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mCameraView = view.findViewById(R.id.glsv_camera);
-        mCameraView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+
         mCameraView.setEGLContextClientVersion(2);
         mCameraView.setRenderer(this);
+        mCameraView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
     }
 
     // TODO: Rename method, update argument and hook method into UI event

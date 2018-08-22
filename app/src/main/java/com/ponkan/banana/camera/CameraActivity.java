@@ -66,7 +66,7 @@ public class CameraActivity extends AppCompatActivity implements
     public void cameraTask() {
         if (hasCameraPermission()) {
             // Have permission, do the thing!
-            Toast.makeText(this, "TODO: Camera things", Toast.LENGTH_LONG).show();
+//            Toast.makeText(this, "TODO: Camera things", Toast.LENGTH_LONG).show();
         } else {
             // Ask for one permission
             EasyPermissions.requestPermissions(

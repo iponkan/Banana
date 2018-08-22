@@ -47,7 +47,8 @@ public class CameraRender implements GLSurfaceView.Renderer {
 
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
-
+        gl.glViewport(0, 0, width, height);
+        Log.d(TAG, "onSurfaceChanged " + width + "x" + height);
     }
 
     @Override
@@ -64,6 +65,7 @@ public class CameraRender implements GLSurfaceView.Renderer {
 
         if (!mFilterInit) {
             updateFilter();
+            mFilterInit = true;
         }
 
         if (mIncomingSizeUpdated) {
@@ -90,6 +92,7 @@ public class CameraRender implements GLSurfaceView.Renderer {
             mFullScreen.release(false);     // assume the GLSurfaceView EGL context is about
             mFullScreen = null;             //  to be destroyed
         }
+        mFilterInit = false;
     }
 
     public void setCameraPreviewSize(int width, int height) {
@@ -99,7 +102,7 @@ public class CameraRender implements GLSurfaceView.Renderer {
         mIncomingSizeUpdated = true;
     }
 
-    public void updateFilter() {
+    private void updateFilter() {
         Texture2dProgram.ProgramType programType;
         programType = Texture2dProgram.ProgramType.TEXTURE_EXT_BW;
 

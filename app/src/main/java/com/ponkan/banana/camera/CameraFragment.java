@@ -172,7 +172,7 @@ public class CameraFragment extends Fragment implements SurfaceTexture.OnFrameAv
 
             Camera.Parameters parms = mCamera.getParameters();
 
-            CameraUtils.choosePreviewSize(parms, 1280, 720);
+            CameraUtils.choosePreviewSize(parms, 1920, 1080);
             CameraUtils.chooseFixedPreviewFps(parms, 30);
 
             // Give the camera a hint that we're recording video.  This can have a big

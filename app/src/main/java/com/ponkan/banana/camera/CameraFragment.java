@@ -21,9 +21,10 @@ import com.ponkan.banana.BananaApplication;
 import com.ponkan.banana.R;
 import com.ponkan.banana.camera.util.CameraUtils;
 import com.ponkan.banana.camera.widget.AspectFrameLayout;
+import com.ponkan.banana.camera.widget.CameraRender;
 
-import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.opengles.GL10;
+
+import java.io.IOException;
 
 import static android.content.Context.WINDOW_SERVICE;
 
@@ -31,8 +32,8 @@ import static android.content.Context.WINDOW_SERVICE;
 /**
  * CameraFragment
  */
-public class CameraFragment extends Fragment implements GLSurfaceView.Renderer,
-        SurfaceTexture.OnFrameAvailableListener {
+public class CameraFragment extends Fragment implements SurfaceTexture.OnFrameAvailableListener
+        , CameraRender.OnSurfaceTextureListener {
     public static final String TAG = "CameraFragment";
 
     private static final String ARG_PARAM1 = "param1";
@@ -45,11 +46,10 @@ public class CameraFragment extends Fragment implements GLSurfaceView.Renderer,
     private OnFragmentInteractionListener mListener;
 
     private GLSurfaceView mCameraView;
-    private SurfaceTexture mSurfaceTexture;
-    private Surface mSurface;
     private Camera mCamera;
     private int mCameraPreviewWidth, mCameraPreviewHeight;
     private AspectFrameLayout mCameraViewContainer;
+    private CameraRender mCameraRender;
 
     public CameraFragment() {
         // Required empty public constructor
@@ -74,12 +74,6 @@ public class CameraFragment extends Fragment implements GLSurfaceView.Renderer,
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        openCamera();
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -93,7 +87,8 @@ public class CameraFragment extends Fragment implements GLSurfaceView.Renderer,
         mCameraViewContainer = view.findViewById(R.id.cameraPreview_afl);
 
         mCameraView.setEGLContextClientVersion(2);
-        mCameraView.setRenderer(this);
+        mCameraRender = new CameraRender(this);
+        mCameraView.setRenderer(mCameraRender);
         mCameraView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
     }
 
@@ -101,12 +96,24 @@ public class CameraFragment extends Fragment implements GLSurfaceView.Renderer,
     public void onStart() {
         super.onStart();
         mCameraView.onResume();
+        openCamera();
     }
 
     @Override
     public void onStop() {
         super.onStop();
+        releaseCamera();
+        mCameraRender.pause();
         mCameraView.onPause();
+    }
+
+    private void releaseCamera() {
+        if (mCamera != null) {
+            mCamera.stopPreview();
+            mCamera.release();
+            mCamera = null;
+            Log.d(TAG, "releaseCamera -- done");
+        }
     }
 
     public void onButtonPressed(Uri uri) {
@@ -134,22 +141,6 @@ public class CameraFragment extends Fragment implements GLSurfaceView.Renderer,
 
     public interface OnFragmentInteractionListener {
         void onFragmentInteraction(Uri uri);
-    }
-
-    @Override
-    public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-//        mSurfaceTexture = new SurfaceTexture();
-
-    }
-
-    @Override
-    public void onSurfaceChanged(GL10 gl, int width, int height) {
-
-    }
-
-    @Override
-    public void onDrawFrame(GL10 gl) {
-        mSurfaceTexture.updateTexImage();
     }
 
     @Override
@@ -196,6 +187,8 @@ public class CameraFragment extends Fragment implements GLSurfaceView.Renderer,
             mCameraPreviewWidth = previewSize.width;
             mCameraPreviewHeight = previewSize.height;
 
+            mCameraRender.setCameraPreviewSize(mCameraPreviewWidth, mCameraPreviewHeight);
+
             Display display = ((WindowManager) BananaApplication.getApplication().getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
 
             if (display.getRotation() == Surface.ROTATION_0) {
@@ -210,5 +203,16 @@ public class CameraFragment extends Fragment implements GLSurfaceView.Renderer,
             }
 
         }
+    }
+
+    @Override
+    public void onSurfaceTextureAvailable(SurfaceTexture st) {
+        st.setOnFrameAvailableListener(this);
+        try {
+            mCamera.setPreviewTexture(st);
+        } catch (IOException ioe) {
+            throw new RuntimeException(ioe);
+        }
+        mCamera.startPreview();
     }
 }

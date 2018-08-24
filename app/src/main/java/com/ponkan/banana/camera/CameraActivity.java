@@ -17,7 +17,6 @@ public class CameraActivity extends FullScreenActivity implements
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        initFullScreen();
         setContentView(R.layout.activity_camera);
 
         if (cameraFragment == null) {
@@ -33,5 +32,11 @@ public class CameraActivity extends FullScreenActivity implements
 
     }
 
-
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) {
+            initFullScreen();
+        }
+    }
 }

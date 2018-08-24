@@ -16,6 +16,7 @@ import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.ImageView;
 
 import com.ponkan.banana.BananaApplication;
 import com.ponkan.banana.R;
@@ -33,7 +34,7 @@ import static android.content.Context.WINDOW_SERVICE;
  * CameraFragment
  */
 public class CameraFragment extends Fragment implements SurfaceTexture.OnFrameAvailableListener
-        , CameraRender.OnSurfaceTextureListener {
+        , CameraRender.OnSurfaceTextureListener, View.OnClickListener {
     public static final String TAG = "CameraFragment";
 
     private static final String ARG_PARAM1 = "param1";
@@ -50,6 +51,7 @@ public class CameraFragment extends Fragment implements SurfaceTexture.OnFrameAv
     private int mCameraPreviewWidth, mCameraPreviewHeight;
     private AspectFrameLayout mCameraViewContainer;
     private CameraRender mCameraRender;
+    private ImageView mIvTakePic;
 
     public CameraFragment() {
         // Required empty public constructor
@@ -90,6 +92,23 @@ public class CameraFragment extends Fragment implements SurfaceTexture.OnFrameAv
         mCameraRender = new CameraRender(this);
         mCameraView.setRenderer(mCameraRender);
         mCameraView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+
+        mIvTakePic = view.findViewById(R.id.iv_take_pic);
+        mIvTakePic.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        switch (id) {
+            case R.id.iv_take_pic:
+                takePic();
+                break;
+        }
+    }
+
+    private void takePic() {
+        // TODO: 2018/8/24 拍照
     }
 
     @Override

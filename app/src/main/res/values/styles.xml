@@ -1,16 +1,18 @@
 <resources>
 
-<!-- Base application theme. -->
-<style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-    <!-- Customize your theme here. -->
-    <item name="colorPrimary">@color/colorPrimary</item>
-    <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-    <item name="colorAccent">@color/colorAccent</item>
-    <!--<item name="android:fitsSystemWindows">true</item>-->//注意这个不能在这里加z
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <!--<item name="android:fitsSystemWindows">true</item>-->//注意这个不能在这里加
 
-    <item name="android:windowTranslucentStatus">false</item>//半透明状态
-    <!--<item name="android:windowTranslucentNavigation">true</item>-->
-    <item name="android:statusBarColor">@android:color/transparent</item>
-</style>
+        //application的主题加上这个属性，表示状态栏半透明，另外，会使得状态栏会悬浮在activity之上
+        //(此时，activity布局会扩展到状态栏底部（Z轴方向）)
+        <item name="android:windowTranslucentStatus">true</item>
+        <!--<item name="android:windowTranslucentNavigation">true</item>-->
+        <!--<item name="android:statusBarColor">@android:color/transparent</item>-->
+    </style>
 
 </resources>

@@ -17,5 +17,13 @@
 
     </com.ponkan.banana.camera.widget.AspectFrameLayout>
 
+    <ImageView
+        android:id="@+id/iv_take_pic"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_gravity="center_horizontal|bottom"
+        android:layout_marginBottom="20dp"
+        android:src="@drawable/take_pic" />
+
 
 </FrameLayout>

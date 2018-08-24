@@ -16,6 +16,7 @@ import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.ponkan.banana.BananaApplication;
@@ -23,6 +24,7 @@ import com.ponkan.banana.R;
 import com.ponkan.banana.camera.util.CameraUtils;
 import com.ponkan.banana.camera.widget.AspectFrameLayout;
 import com.ponkan.banana.camera.widget.CameraRender;
+import com.ponkan.banana.util.CommonUtil;
 
 
 import java.io.IOException;
@@ -94,6 +96,9 @@ public class CameraFragment extends Fragment implements SurfaceTexture.OnFrameAv
         mCameraView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
 
         mIvTakePic = view.findViewById(R.id.iv_take_pic);
+        int height = CommonUtil.getNavigationBarHeight(getContext());
+        FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) mIvTakePic.getLayoutParams();
+        layoutParams.bottomMargin = height;
         mIvTakePic.setOnClickListener(this);
     }
 

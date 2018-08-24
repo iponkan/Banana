@@ -113,6 +113,11 @@ public class CameraFragment extends Fragment implements SurfaceTexture.OnFrameAv
     }
 
     private void takePic() {
+        if (mIvTakePic.isSelected()) {
+            mIvTakePic.setSelected(false);
+        } else {
+            mIvTakePic.setSelected(true);
+        }
         // TODO: 2018/8/24 拍照
     }
 

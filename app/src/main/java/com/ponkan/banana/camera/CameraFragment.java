@@ -206,6 +206,9 @@ public class CameraFragment extends Fragment implements SurfaceTexture.OnFrameAv
             mCameraPreviewWidth = previewSize.width;
             mCameraPreviewHeight = previewSize.height;
 
+            // 相机的输出比例和我们View的比例不一定一样，
+            // 需要通过改变View的大小和裁剪预览数据来适配
+
             mCameraRender.setCameraPreviewSize(mCameraPreviewWidth, mCameraPreviewHeight);
 
             Display display = ((WindowManager) BananaApplication.getApplication().getSystemService(WINDOW_SERVICE)).getDefaultDisplay();

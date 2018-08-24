@@ -28,7 +28,10 @@
             </intent-filter>
         </activity>
         <activity android:name=".audio.AudioActivity" />
-        <activity android:name=".camera.CameraActivity" />
+        <!--父类的theme子类并不会继承-->
+        <activity
+            android:name=".camera.CameraActivity"
+            android:theme="@style/FullScreenTheme" />
         <activity android:name=".player.PlayerActivity" />
         <activity android:name=".test.TestActivity" />
         <activity android:name=".FullScreenActivity" />

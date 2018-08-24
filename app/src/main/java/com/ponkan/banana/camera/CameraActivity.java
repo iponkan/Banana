@@ -17,6 +17,7 @@ public class CameraActivity extends FullScreenActivity implements
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        initFullScreen();
         setContentView(R.layout.activity_camera);
 
         if (cameraFragment == null) {

@@ -209,7 +209,7 @@ public class CameraFragment extends Fragment implements SurfaceTexture.OnFrameAv
     public void onSurfaceTextureAvailable(SurfaceTexture st) {
         st.setOnFrameAvailableListener(this);
         try {
-            mCamera.setPreviewTexture(st);
+            mCamera.setPreviewTexture(st);//需要在startPreview之前调用
         } catch (IOException ioe) {
             throw new RuntimeException(ioe);
         }

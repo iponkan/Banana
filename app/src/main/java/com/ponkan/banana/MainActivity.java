@@ -19,7 +19,8 @@ import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.AppSettingsDialog;
 import pub.devrel.easypermissions.EasyPermissions;
 
-public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks {
+public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks
+        , View.OnClickListener {
 
     public static final String TAG = "CameraActivity";
 
@@ -33,23 +34,47 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        initView();
     }
 
-    void goAudio(View view){
+    private void initView() {
+        findViewById(R.id.bn_go_audio).setOnClickListener(this);
+        findViewById(R.id.bn_go_camera).setOnClickListener(this);
+        findViewById(R.id.bn_go_player).setOnClickListener(this);
+        findViewById(R.id.bn_go_test).setOnClickListener(this);
+    }
+
+
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        switch (id) {
+            case R.id.bn_go_audio:
+                audioTask();
+                break;
+            case R.id.bn_go_camera:
+                cameraTask();
+                break;
+            case R.id.bn_go_player:
+                playerTask();
+                break;
+            case R.id.bn_go_test:
+                testTask();
+                break;
+        }
+    }
+
+    public void audioTask() {
         Intent intent = new Intent(this, AudioActivity.class);
         startActivity(intent);
     }
 
-    void goCamera(View view){
-        cameraTask();
-    }
-
-    void goPlayer(View view){
+    public void playerTask() {
         Intent intent = new Intent(this, PlayerActivity.class);
         startActivity(intent);
     }
 
-    void goTest(View view){
+    public void testTask() {
         Intent intent = new Intent(this, TestActivity.class);
         startActivity(intent);
     }

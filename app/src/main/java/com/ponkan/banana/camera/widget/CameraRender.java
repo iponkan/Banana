@@ -53,6 +53,7 @@ public class CameraRender implements GLSurfaceView.Renderer {
 
     @Override
     public void onDrawFrame(GL10 gl) {
+
         mSurfaceTexture.updateTexImage();
 
         if (mIncomingWidth <= 0 || mIncomingHeight <= 0) {
@@ -62,6 +63,9 @@ public class CameraRender implements GLSurfaceView.Renderer {
             Log.i(TAG, "Drawing before incoming texture size set; skipping");
             return;
         }
+
+        gl.glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 
         if (!mFilterInit) {
             updateFilter();

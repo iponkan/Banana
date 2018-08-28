@@ -1,11 +1,16 @@
 package com.ponkan.banana.camera.widget;
 
 import android.graphics.SurfaceTexture;
+import android.opengl.EGL14;
 import android.opengl.GLSurfaceView;
 import android.util.Log;
 
+import com.ponkan.banana.camera.record.TextureMovieEncoder;
+import com.ponkan.banana.camera.util.PathUtil;
 import com.ponkan.banana.gles.FullFrameRect;
 import com.ponkan.banana.gles.Texture2dProgram;
+
+import java.io.File;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -18,18 +23,21 @@ public class CameraRender implements GLSurfaceView.Renderer {
     private int mIncomingHeight;
     private float[] mSTMatrix = new float[16];
 
-    public CameraRender(OnSurfaceTextureListener listener) {
-        mOnSurfaceTextureListener = listener;
-    }
-
     private FullFrameRect mFullScreen;
     private int mTextureId = -1;
     private SurfaceTexture mSurfaceTexture;
     private OnSurfaceTextureListener mOnSurfaceTextureListener;
     private boolean mFilterInit;
+    private RecordManager mRecordManager;
+
+    public CameraRender(OnSurfaceTextureListener listener) {
+        mOnSurfaceTextureListener = listener;
+        mRecordManager = new RecordManager(this);
+    }
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+        mRecordManager.initRecordingEnabled();
         // Set up the texture blitter that will be used for on-screen display.  This
         // is *not* applied to the recording, because that uses a separate shader.
         mFullScreen = new FullFrameRect(
@@ -62,6 +70,22 @@ public class CameraRender implements GLSurfaceView.Renderer {
             // (This seems to happen if you toggle the screen off/on with power button.)
             Log.i(TAG, "Drawing before incoming texture size set; skipping");
             return;
+        }
+
+        if (mRecordManager.mRecordingEnabled) {
+            switch (mRecordManager.mRecordingStatus) {
+                case RecordManager.RECORDING_OFF:
+                    mRecordManager.startRecord();
+                    break;
+                case RecordManager.RECORDING_RESUMED:
+                    mRecordManager.resumeRecord();
+                    break;
+                case RecordManager.RECORDING_ON:
+                    // yay
+                    break;
+                default:
+                    throw new RuntimeException("unknown status " + mRecordManager.mRecordingStatus);
+            }
         }
 
         if (!mFilterInit) {
@@ -114,7 +138,57 @@ public class CameraRender implements GLSurfaceView.Renderer {
             // If we created a new program, we need to initialize the texture width/height.
             mIncomingSizeUpdated = true;
         }
+    }
 
+    public void changeRecordingState(boolean bool) {
+        mRecordManager.changeRecordingState(bool);
+    }
 
+    /**
+     * 录制控制
+     */
+    private static class RecordManager {
+
+        private boolean mRecordingEnabled;
+        private int mRecordingStatus;
+
+        private static final int RECORDING_OFF = 0;
+        private static final int RECORDING_ON = 1;
+        private static final int RECORDING_RESUMED = 2;
+
+        private CameraRender mCameraRender;
+        private TextureMovieEncoder mVideoEncoder;//编码和混合器
+        private File mOutputFile;
+
+        RecordManager(CameraRender cameraRender) {
+            mCameraRender = cameraRender;
+            mVideoEncoder = new TextureMovieEncoder();
+            mOutputFile = new File(PathUtil.getDir(), "record.mp4");
+        }
+
+        public void startRecord() {
+            mVideoEncoder.startRecording(new TextureMovieEncoder.EncoderConfig(
+                    mOutputFile, mCameraRender.mIncomingWidth, mCameraRender.mIncomingHeight,
+                    EGL14.eglGetCurrentContext()));
+            mRecordingStatus = RecordManager.RECORDING_ON;
+        }
+
+        public void resumeRecord() {
+            mVideoEncoder.updateSharedContext(EGL14.eglGetCurrentContext());
+            mRecordingStatus = RecordManager.RECORDING_ON;
+        }
+
+        public void initRecordingEnabled() {
+            mRecordingEnabled = mVideoEncoder.isRecording();
+            if (mRecordingEnabled) {
+                mRecordingStatus = RECORDING_RESUMED;
+            } else {
+                mRecordingStatus = RECORDING_OFF;
+            }
+        }
+
+        public void changeRecordingState(boolean bool) {
+            mRecordingEnabled = bool;
+        }
     }
 }

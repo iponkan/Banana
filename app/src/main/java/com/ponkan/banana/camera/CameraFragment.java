@@ -115,8 +115,20 @@ public class CameraFragment extends Fragment implements SurfaceTexture.OnFrameAv
     private void takePic() {
         if (mIvTakePic.isSelected()) {
             mIvTakePic.setSelected(false);
+            mCameraView.queueEvent(new Runnable() {
+                @Override
+                public void run() {
+                    mCameraRender.changeRecordingState(false);
+                }
+            });
         } else {
             mIvTakePic.setSelected(true);
+            mCameraView.queueEvent(new Runnable() {
+                @Override
+                public void run() {
+                    mCameraRender.changeRecordingState(true);
+                }
+            });
         }
         // TODO: 2018/8/24 拍照
     }

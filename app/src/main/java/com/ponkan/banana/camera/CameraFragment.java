@@ -22,6 +22,7 @@ import android.widget.ImageView;
 import com.ponkan.banana.BananaApplication;
 import com.ponkan.banana.R;
 import com.ponkan.banana.camera.util.CameraUtils;
+import com.ponkan.banana.camera.util.CommUtil;
 import com.ponkan.banana.camera.widget.AspectFrameLayout;
 import com.ponkan.banana.camera.widget.CameraRender;
 import com.ponkan.banana.util.CommonUtil;
@@ -54,6 +55,7 @@ public class CameraFragment extends Fragment implements SurfaceTexture.OnFrameAv
     private AspectFrameLayout mCameraViewContainer;
     private CameraRender mCameraRender;
     private ImageView mIvTakePic;
+    private int mRotation = Surface.ROTATION_90;//默认为竖直方向
 
     public CameraFragment() {
         // Required empty public constructor
@@ -138,6 +140,22 @@ public class CameraFragment extends Fragment implements SurfaceTexture.OnFrameAv
         super.onStart();
         mCameraView.onResume();
         openCamera();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mCameraView.queueEvent(new Runnable() {
+            @Override
+            public void run() {
+                if (mRotation == Surface.ROTATION_90 | mRotation == Surface.ROTATION_270) {
+                    mCameraRender.setCameraPreviewSize(mCameraPreviewWidth, mCameraPreviewHeight);
+                } else {
+                    mCameraRender.setCameraPreviewSize(mCameraPreviewHeight, mCameraPreviewWidth);
+                }
+
+            }
+        });
     }
 
     @Override
@@ -233,12 +251,12 @@ public class CameraFragment extends Fragment implements SurfaceTexture.OnFrameAv
 
             mCameraRender.setCameraPreviewSize(mCameraPreviewWidth, mCameraPreviewHeight);
 
-            Display display = ((WindowManager) BananaApplication.getApplication().getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
+            mRotation = CommUtil.getRotation(getActivity());
 
-            if (display.getRotation() == Surface.ROTATION_0) {
+            if (mRotation == Surface.ROTATION_0) {
                 mCamera.setDisplayOrientation(90);
                 mCameraViewContainer.setAspectRatio((double) mCameraPreviewHeight / mCameraPreviewWidth);
-            } else if (display.getRotation() == Surface.ROTATION_270) {
+            } else if (mRotation == Surface.ROTATION_270) {
                 mCameraViewContainer.setAspectRatio((double) mCameraPreviewHeight / mCameraPreviewWidth);
                 mCamera.setDisplayOrientation(180);
             } else {

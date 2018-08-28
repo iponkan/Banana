@@ -64,14 +64,6 @@ public class CameraRender implements GLSurfaceView.Renderer {
 
         mSurfaceTexture.updateTexImage();
 
-        if (mIncomingWidth <= 0 || mIncomingHeight <= 0) {
-            // Texture size isn't set yet.  This is only used for the filters, but to be
-            // safe we can just skip drawing while we wait for the various races to resolve.
-            // (This seems to happen if you toggle the screen off/on with power button.)
-            Log.i(TAG, "Drawing before incoming texture size set; skipping");
-            return;
-        }
-
         if (mRecordManager.mRecordingEnabled) {
             switch (mRecordManager.mRecordingStatus) {
                 case RecordManager.RECORDING_OFF:
@@ -86,6 +78,28 @@ public class CameraRender implements GLSurfaceView.Renderer {
                 default:
                     throw new RuntimeException("unknown status " + mRecordManager.mRecordingStatus);
             }
+        } else {
+            switch (mRecordManager.mRecordingStatus) {
+                case RecordManager.RECORDING_ON:
+                case RecordManager.RECORDING_RESUMED:
+                    mRecordManager.stopRecord();
+                    break;
+                case RecordManager.RECORDING_OFF:
+                    // yay
+                    break;
+                default:
+                    throw new RuntimeException("unknown status " + mRecordManager.mRecordingStatus);
+            }
+        }
+
+        mRecordManager.frameRecord(mTextureId, mSurfaceTexture);
+
+        if (mIncomingWidth <= 0 || mIncomingHeight <= 0) {
+            // Texture size isn't set yet.  This is only used for the filters, but to be
+            // safe we can just skip drawing while we wait for the various races to resolve.
+            // (This seems to happen if you toggle the screen off/on with power button.)
+            Log.i(TAG, "Drawing before incoming texture size set; skipping");
+            return;
         }
 
         if (!mFilterInit) {
@@ -173,9 +187,27 @@ public class CameraRender implements GLSurfaceView.Renderer {
             mRecordingStatus = RecordManager.RECORDING_ON;
         }
 
+        public void frameRecord(int mtextureid, SurfaceTexture surfaceTexture) {
+            // Set the video encoder's texture name.  We only need to do this once, but in the
+            // current implementation it has to happen after the video encoder is started, so
+            // we just do it here.
+            //
+            // TODO: be less lame.
+            mVideoEncoder.setTextureId(mtextureid);
+
+            // Tell the video encoder thread that a new frame is available.
+            // This will be ignored if we're not actually recording.
+            mVideoEncoder.frameAvailable(surfaceTexture);//每一帧都传给录制器
+        }
+
         public void resumeRecord() {
             mVideoEncoder.updateSharedContext(EGL14.eglGetCurrentContext());
             mRecordingStatus = RecordManager.RECORDING_ON;
+        }
+
+        public void stopRecord() {
+            mVideoEncoder.stopRecording();
+            mRecordingStatus = RecordManager.RECORDING_OFF;
         }
 
         public void initRecordingEnabled() {

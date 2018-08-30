@@ -23,21 +23,12 @@
         android:text="Camera" />
 
     <Button
-        android:id="@+id/bn_go_player"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="128dp"
-        android:text="Player" />
-
-    <Button
         android:id="@+id/bn_go_test"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="196dp"
+        android:layout_marginTop="134dp"
         android:text="Test" />ss
 
 </RelativeLayout>

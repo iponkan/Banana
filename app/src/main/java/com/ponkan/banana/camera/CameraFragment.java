@@ -1,11 +1,13 @@
 package com.ponkan.banana.camera;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.net.Uri;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -25,7 +27,9 @@ import com.ponkan.banana.camera.util.CameraUtils;
 import com.ponkan.banana.camera.util.CommUtil;
 import com.ponkan.banana.camera.widget.AspectFrameLayout;
 import com.ponkan.banana.camera.widget.CameraRender;
+import com.ponkan.banana.player.PlayerActivity;
 import com.ponkan.banana.util.CommonUtil;
+import com.ponkan.banana.util.PathUtil;
 
 
 import java.io.IOException;
@@ -40,13 +44,6 @@ public class CameraFragment extends Fragment implements SurfaceTexture.OnFrameAv
         , CameraRender.OnSurfaceTextureListener, View.OnClickListener {
     public static final String TAG = "CameraFragment";
 
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
     private OnFragmentInteractionListener mListener;
 
     private GLSurfaceView mCameraView;
@@ -56,6 +53,8 @@ public class CameraFragment extends Fragment implements SurfaceTexture.OnFrameAv
     private CameraRender mCameraRender;
     private ImageView mIvTakePic;
     private int mRotation = Surface.ROTATION_90;//默认为竖直方向
+    private String mVideoSavePath;
+    private Handler mHandler;
 
     public CameraFragment() {
         // Required empty public constructor
@@ -64,8 +63,6 @@ public class CameraFragment extends Fragment implements SurfaceTexture.OnFrameAv
     public static CameraFragment newInstance(String param1, String param2) {
         CameraFragment fragment = new CameraFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -73,10 +70,7 @@ public class CameraFragment extends Fragment implements SurfaceTexture.OnFrameAv
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+        mHandler = new Handler();
     }
 
     @Override
@@ -120,7 +114,8 @@ public class CameraFragment extends Fragment implements SurfaceTexture.OnFrameAv
             mCameraView.queueEvent(new Runnable() {
                 @Override
                 public void run() {
-                    mCameraRender.changeRecordingState(false);
+                    mCameraRender.changeRecordingState(false, null);
+                    goToPlayer();
                 }
             });
         } else {
@@ -128,11 +123,29 @@ public class CameraFragment extends Fragment implements SurfaceTexture.OnFrameAv
             mCameraView.queueEvent(new Runnable() {
                 @Override
                 public void run() {
-                    mCameraRender.changeRecordingState(true);
+                    mVideoSavePath = PathUtil.getVideoSavePath();
+                    mCameraRender.changeRecordingState(true, mVideoSavePath);
                 }
             });
         }
         // TODO: 2018/8/24 拍照
+    }
+
+    private void goToPlayer() {
+        // TODO: 2018/8/30 需要release的时间，这里先延时跳转
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Intent intent = new Intent(getContext(), PlayerActivity.class);
+
+                String[] uris = new String[1];
+                uris[0] = mVideoSavePath;
+                intent.putExtra(PlayerActivity.URI_LIST_EXTRA, uris);
+                intent.setAction(PlayerActivity.ACTION_VIEW_LIST);
+                startActivity(intent);
+            }
+        }, 1000);
+
     }
 
     @Override

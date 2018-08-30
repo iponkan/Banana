@@ -154,8 +154,8 @@ public class CameraRender implements GLSurfaceView.Renderer {
         }
     }
 
-    public void changeRecordingState(boolean bool) {
-        mRecordManager.changeRecordingState(bool);
+    public void changeRecordingState(boolean bool, String savePath) {
+        mRecordManager.changeRecordingState(bool, savePath);
     }
 
     /**
@@ -177,7 +177,6 @@ public class CameraRender implements GLSurfaceView.Renderer {
         RecordManager(CameraRender cameraRender) {
             mCameraRender = cameraRender;
             mVideoEncoder = new TextureMovieEncoder();
-            mOutputFile = new File(PathUtil.getDir(), "record.mp4");
         }
 
         public void startRecord() {
@@ -219,8 +218,12 @@ public class CameraRender implements GLSurfaceView.Renderer {
             }
         }
 
-        public void changeRecordingState(boolean bool) {
+        public void changeRecordingState(boolean bool, String savePath) {
             mRecordingEnabled = bool;
+            if (bool) {
+                mOutputFile = new File(savePath);
+            }
+
         }
     }
 }

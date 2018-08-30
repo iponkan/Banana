@@ -10,9 +10,7 @@ import android.view.View;
 
 import com.ponkan.banana.audio.AudioActivity;
 import com.ponkan.banana.camera.CameraActivity;
-import com.ponkan.banana.player.PlayerActivity;
 import com.ponkan.banana.test.TestActivity;
-import com.ponkan.banana.util.PathUtil;
 
 import java.util.List;
 
@@ -41,7 +39,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     private void initView() {
         findViewById(R.id.bn_go_audio).setOnClickListener(this);
         findViewById(R.id.bn_go_camera).setOnClickListener(this);
-        findViewById(R.id.bn_go_player).setOnClickListener(this);
         findViewById(R.id.bn_go_test).setOnClickListener(this);
     }
 
@@ -56,9 +53,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             case R.id.bn_go_camera:
                 cameraTask();
                 break;
-            case R.id.bn_go_player:
-                playerTask();
-                break;
             case R.id.bn_go_test:
                 testTask();
                 break;
@@ -67,16 +61,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
     public void audioTask() {
         Intent intent = new Intent(this, AudioActivity.class);
-        startActivity(intent);
-    }
-
-    public void playerTask() {
-        Intent intent = new Intent(this, PlayerActivity.class);
-
-        String[] uris = new String[1];
-        uris[0] = PathUtil.getVideoPath();
-        intent.putExtra(PlayerActivity.URI_LIST_EXTRA, uris);
-        intent.setAction(PlayerActivity.ACTION_VIEW_LIST);
         startActivity(intent);
     }
 

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="SegmentBar">
+        <attr name="totalTime" format="float" />
+        <attr name="backColor" format="string" />
+        <attr name="progressColor" format="string" />
+        <attr name="cursorColor" format="string" />
+        <attr name="lineColor" format="string" />
+        <attr name="deleteColor" format="string" />
+        <attr name="cursorUpdateInterval" format="integer" />
+        <attr name="leastTakenTime" format="float" />
+    </declare-styleable>
+</resources>

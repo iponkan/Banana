@@ -27,6 +27,7 @@ import com.ponkan.banana.camera.util.CameraUtils;
 import com.ponkan.banana.camera.util.CommUtil;
 import com.ponkan.banana.camera.widget.AspectFrameLayout;
 import com.ponkan.banana.camera.widget.CameraRender;
+import com.ponkan.banana.camera.widget.SegmentBar;
 import com.ponkan.banana.player.PlayerActivity;
 import com.ponkan.banana.util.CommonUtil;
 import com.ponkan.banana.util.PathUtil;
@@ -41,7 +42,7 @@ import static android.content.Context.WINDOW_SERVICE;
  * CameraFragment
  */
 public class CameraFragment extends Fragment implements SurfaceTexture.OnFrameAvailableListener
-        , CameraRender.OnSurfaceTextureListener, View.OnClickListener {
+        , CameraRender.OnSurfaceTextureListener, View.OnClickListener, SegmentBar.ITakeController {
     public static final String TAG = "CameraFragment";
 
     private OnFragmentInteractionListener mListener;
@@ -52,9 +53,12 @@ public class CameraFragment extends Fragment implements SurfaceTexture.OnFrameAv
     private AspectFrameLayout mCameraViewContainer;
     private CameraRender mCameraRender;
     private ImageView mIvTakePic;
+    private ImageView mIvDelete;
+    private ImageView mIvConfirm;
     private int mRotation = Surface.ROTATION_90;//默认为竖直方向
     private String mVideoSavePath;
     private Handler mHandler;
+    private SegmentBar mSegmentBar;
 
     public CameraFragment() {
         // Required empty public constructor
@@ -85,17 +89,25 @@ public class CameraFragment extends Fragment implements SurfaceTexture.OnFrameAv
         super.onViewCreated(view, savedInstanceState);
         mCameraView = view.findViewById(R.id.glsv_camera);
         mCameraViewContainer = view.findViewById(R.id.cameraPreview_afl);
+        mSegmentBar = view.findViewById(R.id.sb_take_video);
+        mSegmentBar.setITakeController(this);
 
         mCameraView.setEGLContextClientVersion(2);
         mCameraRender = new CameraRender(this);
         mCameraView.setRenderer(mCameraRender);
         mCameraView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
 
-        mIvTakePic = view.findViewById(R.id.iv_take_pic);
+        ViewGroup viewGroup = view.findViewById(R.id.fl_bottom_control);
         int height = CommonUtil.getNavigationBarHeight(getContext());
-        FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) mIvTakePic.getLayoutParams();
+        FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) viewGroup.getLayoutParams();
         layoutParams.bottomMargin = height;
+
+        mIvTakePic = view.findViewById(R.id.iv_take_pic);
         mIvTakePic.setOnClickListener(this);
+        mIvDelete = view.findViewById(R.id.iv_delete);
+        mIvDelete.setOnClickListener(this);
+        mIvConfirm = view.findViewById(R.id.iv_confirm);
+        mIvConfirm.setOnClickListener(this);
     }
 
     @Override
@@ -104,6 +116,12 @@ public class CameraFragment extends Fragment implements SurfaceTexture.OnFrameAv
         switch (id) {
             case R.id.iv_take_pic:
                 takePic();
+                break;
+            case R.id.iv_delete:
+                mSegmentBar.cancelLastSection();
+                break;
+            case R.id.iv_confirm:
+                goToPlayer();
                 break;
         }
     }
@@ -115,7 +133,7 @@ public class CameraFragment extends Fragment implements SurfaceTexture.OnFrameAv
                 @Override
                 public void run() {
                     mCameraRender.changeRecordingState(false, null);
-                    goToPlayer();
+//                    goToPlayer();
                 }
             });
         } else {
@@ -125,6 +143,12 @@ public class CameraFragment extends Fragment implements SurfaceTexture.OnFrameAv
                 public void run() {
                     mVideoSavePath = PathUtil.getVideoSavePath();
                     mCameraRender.changeRecordingState(true, mVideoSavePath);
+                    mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mSegmentBar.startNewSection();
+                        }
+                    });
                 }
             });
         }
@@ -289,5 +313,40 @@ public class CameraFragment extends Fragment implements SurfaceTexture.OnFrameAv
             throw new RuntimeException(ioe);
         }
         mCamera.startPreview();
+    }
+
+    @Override
+    public void leastLimitMatch() {
+
+    }
+
+    @Override
+    public void leastLimitUnMatch() {
+
+    }
+
+    @Override
+    public void takenOver() {
+
+    }
+
+    @Override
+    public boolean deleteLastSection() {
+        return false;
+    }
+
+    @Override
+    public void takenTimeCallback(int time) {
+
+    }
+
+    @Override
+    public void deleteStateChange(int state) {
+
+    }
+
+    @Override
+    public void deleteLastSectionFailed() {
+
     }
 }

@@ -27,13 +27,12 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class SegmentBar extends SurfaceView implements SurfaceHolder.Callback {
 
-    private static final String TAG = "TakeVideoBar";
+    private static final String TAG = "SegmentBar";
 
     private static final int FRAME_FRESH_INTERVAL = 16;//在刷新拍摄进度的时候的帧率问题，多少MS一帧
     private static final float DEFAULT_TOTAL_TIME = 10;//s
     private static final float DEFAULT_LEAST_TAKEN_TIME = 2;//s
     private static final int DEFAULT_CURSOR_UPDATE_INTERVAL = 500;//ms
-
 
     /**
      * 总时间(s为单位)
@@ -112,14 +111,14 @@ public class SegmentBar extends SurfaceView implements SurfaceHolder.Callback {
      */
     private float mLeastTakenTimeWidth = 0;
 
-    private Paint mCursorPaint = null;
-    private Paint mBackPaint = null;
-    private Paint mProgressPaint = null;
-    private Paint mLinePaint = null;
-    private Paint mDeletePaint = null;
-    private Paint mLeastTimeLinePaint = null;
+    private Paint mCursorPaint;
+    private Paint mBackPaint;
+    private Paint mProgressPaint;
+    private Paint mLinePaint;
+    private Paint mDeletePaint;
+    private Paint mLeastTimeLinePaint;
 
-    private ITakeController mIController = null;
+    private ITakeController mIController;
 
     private volatile int mState = 0;
     /**
@@ -262,6 +261,7 @@ public class SegmentBar extends SurfaceView implements SurfaceHolder.Callback {
         }
         setSectionTakingState(true);
         mStartSectionTime = mTakenTime.get();
+        Log.d(TAG, "startNewSection====" + mStartSectionTime);
     }
 
     private void startDrawThread() {
@@ -343,6 +343,8 @@ public class SegmentBar extends SurfaceView implements SurfaceHolder.Callback {
         }
         // 画背景
         canvas.drawRect(0, 0, mMeasureWidth, mMeasureHeight, mBackPaint);
+        Log.d(TAG, "mCursorPos====" + mCursorPos);
+        Log.d(TAG, "mMeasureHeight====" + mMeasureHeight);
         // 画拍摄段
         if (mCursorPos != 0 && mCursorPos <= mMeasureWidth) {
             canvas.drawRect(0, 0, mCursorPos, mMeasureHeight, mProgressPaint);
@@ -483,7 +485,7 @@ public class SegmentBar extends SurfaceView implements SurfaceHolder.Callback {
      * 取消上一段的拍摄
      */
     public void cancelLastSection() {
-        // Debug.d(TAG, "delete 1 STACK_FILE_SIZE = "+mTakenTimeArray.size());
+         Log.d(TAG, "delete 1 STACK_FILE_SIZE = "+mTakenTimeArray.size());
         if (!isDeletingState()) {
             // Debug.d(TAG, "delete 1 state STACK_FILE_SIZE = "+mTakenTimeArray.size());
             // 处于拍摄过程中，这时候要去选取上一段的拍摄数据，标记出来
@@ -498,7 +500,7 @@ public class SegmentBar extends SurfaceView implements SurfaceHolder.Callback {
                 }
             }
         } else {
-            // Debug.d(TAG, "delete 1 state STACK_FILE_SIZE = "+mTakenTimeArray.size());
+             Log.d(TAG, "delete 1 state STACK_FILE_SIZE = "+mTakenTimeArray.size());
             // 已经选好一段标记了，进行删除
             if (mTakenTimeArray.size() > 0) {
                 if (mIController != null) {
@@ -549,10 +551,14 @@ public class SegmentBar extends SurfaceView implements SurfaceHolder.Callback {
      * @return 如果在往前画的过程中，则是true，否则就是false
      */
     private boolean doRealVideoDraw() {
-        // Debug.d(TAG, "~~~doRealVideoDraw" + isSectionTakingState());
         long curTime = mDrewTime.get();
+        Log.d(TAG, "curTime====" + curTime);
         long takenTime = mTakenTime.get();
+        Log.d(TAG, "takenTime====" + takenTime);
         long curTimeMillis = System.currentTimeMillis();
+        Log.d(TAG, "curTimeMillis====" + curTimeMillis);
+        Log.d(TAG, "mTakingRefreshLastTime====" + mTakingRefreshLastTime);
+
         long passTime = curTimeMillis - mTakingRefreshLastTime;
         mTakingRefreshLastTime = curTimeMillis;
         if ((curTime + passTime) > takenTime) {
@@ -591,9 +597,9 @@ public class SegmentBar extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     private boolean checkAdd2LimitMatch(float addWidth) {
-        // Log.d(TAG, "checkAdd2LimitMatch: mCursorPos" + mCursorPos +
-        // " addWidth:" + addWidth
-        // + " mLeastTakenTimeWidth:" + mLeastTakenTimeWidth);
+         Log.d(TAG, "checkAdd2LimitMatch: mCursorPos" + mCursorPos +
+         " addWidth:" + addWidth
+         + " mLeastTakenTimeWidth:" + mLeastTakenTimeWidth);
         return mCursorPos < mLeastTakenTimeWidth && (mCursorPos + addWidth) >= mLeastTakenTimeWidth;
     }
 

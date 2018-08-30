@@ -1,4 +1,4 @@
-package com.ponkan.banana.camera.util;
+package com.ponkan.banana.util;
 
 import android.os.Environment;
 
@@ -12,4 +12,9 @@ public class PathUtil {
         }
         return file;
     }
+
+    public static String getVideoPath() {
+        return Environment.getExternalStorageDirectory().getAbsolutePath() + "/DCIM/Camera/VID_20171122_101304.mp4";
+    }
+
 }

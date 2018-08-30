@@ -24,7 +24,6 @@ import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 
-import com.ponkan.banana.MainActivity;
 import com.ponkan.banana.gles.EglCore;
 import com.ponkan.banana.gles.FullFrameRect;
 import com.ponkan.banana.gles.Texture2dProgram;

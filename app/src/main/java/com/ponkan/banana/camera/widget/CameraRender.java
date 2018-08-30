@@ -6,7 +6,7 @@ import android.opengl.GLSurfaceView;
 import android.util.Log;
 
 import com.ponkan.banana.camera.record.TextureMovieEncoder;
-import com.ponkan.banana.camera.util.PathUtil;
+import com.ponkan.banana.util.PathUtil;
 import com.ponkan.banana.gles.FullFrameRect;
 import com.ponkan.banana.gles.Texture2dProgram;
 

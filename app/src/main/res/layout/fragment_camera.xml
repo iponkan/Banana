@@ -26,8 +26,9 @@
         android:id="@+id/fl_bottom_control"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
-        android:layout_gravity="bottom">
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="40dp">
+
         <ImageView
             android:id="@+id/iv_take_pic"
             android:layout_width="wrap_content"
@@ -39,17 +40,18 @@
             android:id="@+id/iv_delete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/delete"
-            android:layout_gravity="center_vertical"
-            android:layout_marginLeft="30dp"/>
+            android:layout_gravity="right|center_vertical"
+            android:layout_marginRight="100dp"
+            android:src="@drawable/delete" />
 
         <ImageView
             android:id="@+id/iv_confirm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="30dp"
             android:layout_gravity="right|center_vertical"
-            android:src="@drawable/confirm"/>
+            android:layout_marginRight="40dp"
+            android:alpha="0.5"
+            android:src="@drawable/confirm" />
     </FrameLayout>
 
     <com.ponkan.banana.camera.widget.ModeView

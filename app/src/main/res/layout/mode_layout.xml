@@ -15,6 +15,13 @@
         android:textColor="@android:color/white"
         android:textSize="14dp" />
 
+    <View
+        android:layout_width="3dp"
+        android:layout_height="3dp"
+        android:layout_alignLeft="@id/tv_pic"
+        android:layout_below="@id/tv_pic"
+        android:background="@drawable/dot" />
+
     <TextView
         android:id="@+id/tv_vid"
         android:layout_width="wrap_content"

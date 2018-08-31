@@ -12,22 +12,20 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-import com.ponkan.banana.BananaApplication;
 import com.ponkan.banana.R;
 import com.ponkan.banana.camera.util.CameraUtils;
 import com.ponkan.banana.camera.util.CommUtil;
 import com.ponkan.banana.camera.widget.AspectFrameLayout;
 import com.ponkan.banana.camera.widget.CameraRender;
 import com.ponkan.banana.camera.widget.SegmentBar;
+import com.ponkan.banana.camera.widget.ModeView;
 import com.ponkan.banana.player.PlayerActivity;
 import com.ponkan.banana.util.CommonUtil;
 import com.ponkan.banana.util.PathUtil;
@@ -35,14 +33,13 @@ import com.ponkan.banana.util.PathUtil;
 
 import java.io.IOException;
 
-import static android.content.Context.WINDOW_SERVICE;
-
 
 /**
  * CameraFragment
  */
 public class CameraFragment extends Fragment implements SurfaceTexture.OnFrameAvailableListener
-        , CameraRender.OnSurfaceTextureListener, View.OnClickListener, SegmentBar.ITakeController {
+        , CameraRender.OnSurfaceTextureListener, View.OnClickListener, SegmentBar.ITakeController,
+        ModeView.ModeChangeListener {
     public static final String TAG = "CameraFragment";
 
     private OnFragmentInteractionListener mListener;
@@ -59,6 +56,8 @@ public class CameraFragment extends Fragment implements SurfaceTexture.OnFrameAv
     private String mVideoSavePath;
     private Handler mHandler;
     private SegmentBar mSegmentBar;
+    private int mMode;
+    private ModeView mModeView;
 
     public CameraFragment() {
         // Required empty public constructor
@@ -108,6 +107,16 @@ public class CameraFragment extends Fragment implements SurfaceTexture.OnFrameAv
         mIvDelete.setOnClickListener(this);
         mIvConfirm = view.findViewById(R.id.iv_confirm);
         mIvConfirm.setOnClickListener(this);
+
+        mModeView = view.findViewById(R.id.mv_mode);
+        mModeView.setModeChangeListener(this);
+        mMode = mModeView.getMode();
+
+    }
+
+    @Override
+    public void onModeChange(int newMode) {
+        mMode = newMode;
     }
 
     @Override
@@ -115,25 +124,30 @@ public class CameraFragment extends Fragment implements SurfaceTexture.OnFrameAv
         int id = v.getId();
         switch (id) {
             case R.id.iv_take_pic:
-                takePic();
+                if (mMode == ModeView.MODE_PIC) {
+                    takePic();
+                } else if (mMode == ModeView.MODE_VID) {
+                    record();
+                }
+
                 break;
             case R.id.iv_delete:
-                mSegmentBar.cancelLastSection();
+//                mSegmentBar.cancelLastSection();
                 break;
             case R.id.iv_confirm:
-                goToPlayer();
+//                goToPlayer();
                 break;
         }
     }
 
-    private void takePic() {
+    private void record() {
         if (mIvTakePic.isSelected()) {
             mIvTakePic.setSelected(false);
             mCameraView.queueEvent(new Runnable() {
                 @Override
                 public void run() {
                     mCameraRender.changeRecordingState(false, null);
-//                    goToPlayer();
+                    goToPlayer();
                 }
             });
         } else {
@@ -152,7 +166,10 @@ public class CameraFragment extends Fragment implements SurfaceTexture.OnFrameAv
                 }
             });
         }
-        // TODO: 2018/8/24 拍照
+    }
+
+    private void takePic() {
+
     }
 
     private void goToPlayer() {

@@ -52,5 +52,13 @@
             android:src="@drawable/confirm"/>
     </FrameLayout>
 
+    <com.ponkan.banana.camera.widget.ModeView
+        android:id="@+id/mv_mode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom">
+
+    </com.ponkan.banana.camera.widget.ModeView>
+
 
 </FrameLayout>

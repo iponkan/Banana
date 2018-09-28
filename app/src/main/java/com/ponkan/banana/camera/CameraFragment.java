@@ -2,6 +2,7 @@ package com.ponkan.banana.camera;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.net.Uri;
@@ -21,7 +22,8 @@ import android.widget.ImageView;
 
 import com.ponkan.banana.R;
 import com.ponkan.banana.camera.util.CameraUtils;
-import com.ponkan.banana.camera.util.CommUtil;
+import com.ponkan.banana.camera.util.ImageUtil;
+import com.ponkan.banana.camera.util.RotationUtil;
 import com.ponkan.banana.camera.widget.AspectFrameLayout;
 import com.ponkan.banana.camera.widget.CameraRender;
 import com.ponkan.banana.camera.widget.SegmentBar;
@@ -29,6 +31,8 @@ import com.ponkan.banana.camera.widget.ModeView;
 import com.ponkan.banana.player.PlayerActivity;
 import com.ponkan.banana.util.CommonUtil;
 import com.ponkan.banana.util.PathUtil;
+import com.ponkan.banana.util.ThreadUtil;
+import com.ponkan.banana.util.ToastUtil;
 
 
 import java.io.IOException;
@@ -39,7 +43,7 @@ import java.io.IOException;
  */
 public class CameraFragment extends Fragment implements SurfaceTexture.OnFrameAvailableListener
         , CameraRender.OnSurfaceTextureListener, View.OnClickListener, SegmentBar.ITakeController,
-        ModeView.ModeChangeListener {
+        ModeView.ModeChangeListener, ITakePicCallback {
     public static final String TAG = "CameraFragment";
 
     private OnFragmentInteractionListener mListener;
@@ -169,7 +173,12 @@ public class CameraFragment extends Fragment implements SurfaceTexture.OnFrameAv
     }
 
     private void takePic() {
-
+        mCameraView.queueEvent(new Runnable() {
+            @Override
+            public void run() {
+                mCameraRender.takePic(CameraFragment.this);
+            }
+        });
     }
 
     private void goToPlayer() {
@@ -305,7 +314,7 @@ public class CameraFragment extends Fragment implements SurfaceTexture.OnFrameAv
 
             mCameraRender.setCameraPreviewSize(mCameraPreviewWidth, mCameraPreviewHeight);
 
-            mRotation = CommUtil.getRotation(getActivity());
+            mRotation = RotationUtil.getRotation(getActivity());
 
             if (mRotation == Surface.ROTATION_0) {
                 mCamera.setDisplayOrientation(90);
@@ -365,5 +374,23 @@ public class CameraFragment extends Fragment implements SurfaceTexture.OnFrameAv
     @Override
     public void deleteLastSectionFailed() {
 
+    }
+
+    @Override
+    public void onPicTaken(final Bitmap bitmap) {
+        ThreadUtil.runOnThread(new Runnable() {
+            @Override
+            public void run() {
+                final String path = ImageUtil.saveBitmap(bitmap);
+                if (null != path) {
+                    mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            ToastUtil.show(getContext(), "图片保存成功，路径为：" + path);
+                        }
+                    });
+                }
+            }
+        });
     }
 }

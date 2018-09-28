@@ -1,16 +1,21 @@
 package com.ponkan.banana.camera.widget;
 
+import android.graphics.Bitmap;
 import android.graphics.SurfaceTexture;
 import android.opengl.EGL14;
+import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.util.Log;
 
+import com.ponkan.banana.camera.ITakePicCallback;
 import com.ponkan.banana.camera.record.TextureMovieEncoder;
-import com.ponkan.banana.util.PathUtil;
+import com.ponkan.banana.gles.Common;
+import com.ponkan.banana.gles.FrameBufferObject;
 import com.ponkan.banana.gles.FullFrameRect;
 import com.ponkan.banana.gles.Texture2dProgram;
 
 import java.io.File;
+import java.nio.IntBuffer;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -19,8 +24,8 @@ public class CameraRender implements GLSurfaceView.Renderer {
 
     public static final String TAG = "CameraRender";
     private boolean mIncomingSizeUpdated;
-    private int mIncomingWidth;
-    private int mIncomingHeight;
+    private int mRecordWidth;
+    private int mRecordHeight;
     private float[] mSTMatrix = new float[16];
 
     private FullFrameRect mFullScreen;
@@ -94,7 +99,7 @@ public class CameraRender implements GLSurfaceView.Renderer {
 
         mRecordManager.frameRecord(mTextureId, mSurfaceTexture);
 
-        if (mIncomingWidth <= 0 || mIncomingHeight <= 0) {
+        if (mRecordWidth <= 0 || mRecordHeight <= 0) {
             // Texture size isn't set yet.  This is only used for the filters, but to be
             // safe we can just skip drawing while we wait for the various races to resolve.
             // (This seems to happen if you toggle the screen off/on with power button.)
@@ -108,13 +113,35 @@ public class CameraRender implements GLSurfaceView.Renderer {
         }
 
         if (mIncomingSizeUpdated) {
-            mFullScreen.getProgram().setTexSize(mIncomingWidth, mIncomingHeight);
+            mFullScreen.getProgram().setTexSize(mRecordWidth, mRecordHeight);
             mIncomingSizeUpdated = false;
         }
 
         // Draw the video frame.
         mSurfaceTexture.getTransformMatrix(mSTMatrix);
         mFullScreen.drawFrame(mTextureId, mSTMatrix);
+    }
+
+    public void takePic(ITakePicCallback callback) {
+        FrameBufferObject frameBufferObject = new FrameBufferObject();
+        int bufferTexID;
+        IntBuffer buffer;
+        Bitmap bmp;
+
+        bufferTexID = Common.genBlankTextureID(mRecordWidth, mRecordHeight);
+        frameBufferObject.bindTexture(bufferTexID);
+        GLES20.glViewport(0, 0, mRecordWidth, mRecordHeight);
+//        mFrameRecorder.drawCache();
+        buffer = IntBuffer.allocate(mRecordWidth * mRecordHeight);
+        GLES20.glReadPixels(0, 0, mRecordWidth, mRecordHeight, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, buffer);
+        bmp = Bitmap.createBitmap(mRecordWidth, mRecordHeight, Bitmap.Config.ARGB_8888);
+        bmp.copyPixelsFromBuffer(buffer);
+        Log.i(TAG, String.format("w: %d, h: %d", mRecordWidth, mRecordHeight));
+
+        frameBufferObject.release();
+        GLES20.glDeleteTextures(1, new int[]{bufferTexID}, 0);
+
+        callback.onPicTaken(bmp);
     }
 
     public interface OnSurfaceTextureListener {
@@ -136,8 +163,8 @@ public class CameraRender implements GLSurfaceView.Renderer {
 
     public void setCameraPreviewSize(int width, int height) {
         Log.d(TAG, "setCameraPreviewSize");
-        mIncomingWidth = width;
-        mIncomingHeight = height;
+        mRecordWidth = width;
+        mRecordHeight = height;
         mIncomingSizeUpdated = true;
     }
 
@@ -181,7 +208,7 @@ public class CameraRender implements GLSurfaceView.Renderer {
 
         public void startRecord() {
             mVideoEncoder.startRecording(new TextureMovieEncoder.EncoderConfig(
-                    mOutputFile, mCameraRender.mIncomingWidth, mCameraRender.mIncomingHeight,
+                    mOutputFile, mCameraRender.mRecordWidth, mCameraRender.mRecordHeight,
                     EGL14.eglGetCurrentContext()));
             mRecordingStatus = RecordManager.RECORDING_ON;
         }

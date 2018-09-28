@@ -343,8 +343,8 @@ public class SegmentBar extends SurfaceView implements SurfaceHolder.Callback {
         }
         // 画背景
         canvas.drawRect(0, 0, mMeasureWidth, mMeasureHeight, mBackPaint);
-        Log.d(TAG, "mCursorPos====" + mCursorPos);
-        Log.d(TAG, "mMeasureHeight====" + mMeasureHeight);
+//        Log.d(TAG, "mCursorPos====" + mCursorPos);
+//        Log.d(TAG, "mMeasureHeight====" + mMeasureHeight);
         // 画拍摄段
         if (mCursorPos != 0 && mCursorPos <= mMeasureWidth) {
             canvas.drawRect(0, 0, mCursorPos, mMeasureHeight, mProgressPaint);
@@ -552,12 +552,12 @@ public class SegmentBar extends SurfaceView implements SurfaceHolder.Callback {
      */
     private boolean doRealVideoDraw() {
         long curTime = mDrewTime.get();
-        Log.d(TAG, "curTime====" + curTime);
+//        Log.d(TAG, "curTime====" + curTime);
         long takenTime = mTakenTime.get();
-        Log.d(TAG, "takenTime====" + takenTime);
+//        Log.d(TAG, "takenTime====" + takenTime);
         long curTimeMillis = System.currentTimeMillis();
-        Log.d(TAG, "curTimeMillis====" + curTimeMillis);
-        Log.d(TAG, "mTakingRefreshLastTime====" + mTakingRefreshLastTime);
+//        Log.d(TAG, "curTimeMillis====" + curTimeMillis);
+//        Log.d(TAG, "mTakingRefreshLastTime====" + mTakingRefreshLastTime);
 
         long passTime = curTimeMillis - mTakingRefreshLastTime;
         mTakingRefreshLastTime = curTimeMillis;

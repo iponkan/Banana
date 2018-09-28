@@ -8,15 +8,16 @@ public class PathUtil {
 
     private static final String APP_NAME = "Banana";
 
+    private static String getPicName() {
+        return APP_NAME + "_" + TimeSwitch.ToDate2(System.currentTimeMillis()) + "_save" + ".jpg";
+    }
 
-    public static String getName() {
+    private static String getVideoName() {
         return APP_NAME + "_" + TimeSwitch.ToDate2(System.currentTimeMillis()) + "_save" + ".mp4";
     }
 
     /**
      * 从编辑页处理的图片的路径
-     *
-     * @return
      */
     public static String getVideoSavePath() {
         String saveDir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + APP_NAME;
@@ -24,11 +25,16 @@ public class PathUtil {
         if (!file.exists()) {
             file.mkdirs();
         }
-        return saveDir + "/" + getName();
+        return saveDir + "/" + getVideoName();
     }
 
-    public static String getVideoPath() {
-        return Environment.getExternalStorageDirectory().getAbsolutePath() + "/DCIM/Camera/VID_20171122_101304.mp4";
+    public static String getPicSavePath() {
+        String saveDir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + APP_NAME;
+        File file = new File(Environment.getExternalStorageDirectory(), APP_NAME);
+        if (!file.exists()) {
+            file.mkdirs();
+        }
+        return saveDir + "/" + getPicName();
     }
 
 }

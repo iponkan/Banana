@@ -15,6 +15,7 @@ import com.ponkan.banana.gles.FullFrameRect;
 import com.ponkan.banana.gles.Texture2dProgram;
 
 import java.io.File;
+import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -120,28 +121,23 @@ public class CameraRender implements GLSurfaceView.Renderer {
         // Draw the video frame.
         mSurfaceTexture.getTransformMatrix(mSTMatrix);
         mFullScreen.drawFrame(mTextureId, mSTMatrix);
+        if (mShouldTakePic) {
+            mRecordManager.takePic(mRecordWidth, mRecordHeight, mITakePicCallback);
+            mShouldTakePic = false;
+        }
     }
 
+    private boolean mShouldTakePic = false;
+    private ITakePicCallback mITakePicCallback;
+
+    /**
+     * 实测种发现通过离屏渲染到fbo上，然后glReadPixels效率比直接读取要快了2倍多。
+     *
+     * @param callback 拍照回调
+     */
     public void takePic(ITakePicCallback callback) {
-        FrameBufferObject frameBufferObject = new FrameBufferObject();
-        int bufferTexID;
-        IntBuffer buffer;
-        Bitmap bmp;
-
-        bufferTexID = Common.genBlankTextureID(mRecordWidth, mRecordHeight);
-        frameBufferObject.bindTexture(bufferTexID);
-        GLES20.glViewport(0, 0, mRecordWidth, mRecordHeight);
-//        mFrameRecorder.drawCache();
-        buffer = IntBuffer.allocate(mRecordWidth * mRecordHeight);
-        GLES20.glReadPixels(0, 0, mRecordWidth, mRecordHeight, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, buffer);
-        bmp = Bitmap.createBitmap(mRecordWidth, mRecordHeight, Bitmap.Config.ARGB_8888);
-        bmp.copyPixelsFromBuffer(buffer);
-        Log.i(TAG, String.format("w: %d, h: %d", mRecordWidth, mRecordHeight));
-
-        frameBufferObject.release();
-        GLES20.glDeleteTextures(1, new int[]{bufferTexID}, 0);
-
-        callback.onPicTaken(bmp);
+        mShouldTakePic = true;
+        mITakePicCallback = callback;
     }
 
     public interface OnSurfaceTextureListener {
@@ -224,6 +220,11 @@ public class CameraRender implements GLSurfaceView.Renderer {
             // Tell the video encoder thread that a new frame is available.
             // This will be ignored if we're not actually recording.
             mVideoEncoder.frameAvailable(surfaceTexture);//每一帧都传给录制器
+        }
+
+        public void takePic(int width, int height, ITakePicCallback callback) {
+            Bitmap bitmap = mVideoEncoder.takePic(width, height);
+            callback.onPicTaken(bitmap);
         }
 
         public void resumeRecord() {

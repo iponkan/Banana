@@ -16,6 +16,7 @@
 
 package com.ponkan.banana.camera.record;
 
+import android.graphics.Bitmap;
 import android.graphics.SurfaceTexture;
 import android.opengl.EGLContext;
 import android.opengl.GLES20;
@@ -32,6 +33,7 @@ import com.ponkan.banana.gles.WindowSurface;
 import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.nio.ByteBuffer;
 
 /**
  * Encode a movie from frames rendered from an external texture image.
@@ -84,6 +86,24 @@ public class TextureMovieEncoder implements Runnable {
     private boolean mReady;// 因为这里用了HandlerThread，这个标志位来确保后面的东西都在Looper跑起来，eventhandler可用
     // 这里采用了wait,notify 的阻塞方式
     private boolean mRunning;
+
+    public Bitmap takePic(int mRecordWidth, int mRecordHeight) {
+//        int[] frame = new int[1];
+//        GLES20.glGenFramebuffers(1, frame, 0);
+//        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, frame[0]);
+//        GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, mTextureId, 0);
+
+        ByteBuffer buffer = ByteBuffer.allocate(mRecordWidth * mRecordHeight * 4);
+        GLES20.glReadPixels(0, 0, mRecordWidth, mRecordHeight, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, buffer);
+        Bitmap bitmap = Bitmap.createBitmap(mRecordWidth, mRecordHeight, Bitmap.Config.ARGB_8888);
+        bitmap.copyPixelsFromBuffer(buffer);
+//
+//        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+//        GLES20.glDeleteFramebuffers(1, frame, 0);
+//        mInputWindowSurface.swapBuffers();
+
+        return bitmap;
+    }
 
 
     /**

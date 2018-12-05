@@ -43,12 +43,20 @@ public class CameraActivity extends FullScreenActivity implements OnFragmentInte
     public void go2ImagePreview(String imagePath) {
         ImagePreviewFragment imagePreviewFragment = ImagePreviewFragment.newInstance(imagePath, "");
         getSupportFragmentManager().beginTransaction().add(android.R.id.content, imagePreviewFragment,
-                "imagePreviewFragment").commitAllowingStateLoss();
+                "imagePreviewFragment").addToBackStack(null).commitAllowingStateLoss();
 
     }
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+
+        // 后退处理，配合addToBackStack使用
+        int count = getSupportFragmentManager().getBackStackEntryCount();
+
+        if (count == 0) {
+            super.onBackPressed();
+        } else {
+            getSupportFragmentManager().popBackStack();
+        }
     }
 }

@@ -3,20 +3,15 @@ package com.ponkan.banana.camera.widget;
 import android.graphics.Bitmap;
 import android.graphics.SurfaceTexture;
 import android.opengl.EGL14;
-import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.util.Log;
 
 import com.ponkan.banana.camera.ITakePicCallback;
 import com.ponkan.banana.camera.record.TextureMovieEncoder;
-import com.ponkan.banana.gles.Common;
-import com.ponkan.banana.gles.FrameBufferObject;
 import com.ponkan.banana.gles.FullFrameRect;
 import com.ponkan.banana.gles.Texture2dProgram;
 
 import java.io.File;
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;

@@ -93,10 +93,12 @@ public class TextureMovieEncoder implements Runnable {
 //        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, frame[0]);
 //        GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, mTextureId, 0);
 
+        long startTime = System.currentTimeMillis();
         ByteBuffer buffer = ByteBuffer.allocate(mRecordWidth * mRecordHeight * 4);
         GLES20.glReadPixels(0, 0, mRecordWidth, mRecordHeight, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, buffer);
         Bitmap bitmap = Bitmap.createBitmap(mRecordWidth, mRecordHeight, Bitmap.Config.ARGB_8888);
         bitmap.copyPixelsFromBuffer(buffer);
+        Log.w(TAG, "spend time: " + (System.currentTimeMillis() - startTime));
 //
 //        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
 //        GLES20.glDeleteFramebuffers(1, frame, 0);

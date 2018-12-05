@@ -7,8 +7,7 @@ import android.support.annotation.Nullable;
 import com.ponkan.banana.FullScreenActivity;
 import com.ponkan.banana.R;
 
-public class CameraActivity extends FullScreenActivity implements
-        CameraFragment.OnFragmentInteractionListener {
+public class CameraActivity extends FullScreenActivity implements OnFragmentInteractionListener {
 
 
     private CameraFragment cameraFragment;
@@ -38,5 +37,18 @@ public class CameraActivity extends FullScreenActivity implements
         if (hasFocus) {
             initFullScreen();
         }
+    }
+
+    @Override
+    public void go2ImagePreview(String imagePath) {
+        ImagePreviewFragment imagePreviewFragment = ImagePreviewFragment.newInstance(imagePath, "");
+        getSupportFragmentManager().beginTransaction().add(android.R.id.content, imagePreviewFragment,
+                "imagePreviewFragment").commitAllowingStateLoss();
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 }

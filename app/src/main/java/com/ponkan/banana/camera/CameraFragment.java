@@ -1,5 +1,6 @@
 package com.ponkan.banana.camera;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -46,8 +47,6 @@ public class CameraFragment extends Fragment implements SurfaceTexture.OnFrameAv
         ModeView.ModeChangeListener, ITakePicCallback {
     public static final String TAG = "CameraFragment";
 
-    private OnFragmentInteractionListener mListener;
-
     private GLSurfaceView mCameraView;
     private Camera mCamera;
     private int mCameraPreviewWidth, mCameraPreviewHeight;
@@ -62,6 +61,7 @@ public class CameraFragment extends Fragment implements SurfaceTexture.OnFrameAv
     private SegmentBar mSegmentBar;
     private int mMode;
     private ModeView mModeView;
+    private OnFragmentInteractionListener mOnFragmentInteractionListener;
 
     public CameraFragment() {
         // Required empty public constructor
@@ -238,17 +238,11 @@ public class CameraFragment extends Fragment implements SurfaceTexture.OnFrameAv
         }
     }
 
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
+            mOnFragmentInteractionListener = (OnFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -258,11 +252,7 @@ public class CameraFragment extends Fragment implements SurfaceTexture.OnFrameAv
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
-    }
-
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
+        mOnFragmentInteractionListener = null;
     }
 
     @Override
@@ -387,6 +377,7 @@ public class CameraFragment extends Fragment implements SurfaceTexture.OnFrameAv
                         @Override
                         public void run() {
                             ToastUtil.show(getContext(), "图片保存成功，路径为：" + path);
+                            mOnFragmentInteractionListener.go2ImagePreview(path);
                         }
                     });
                 }
